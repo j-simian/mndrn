@@ -24,6 +24,12 @@ export function addEntry(entry: StudyEntry) {
   return entries;
 }
 
+export function updateEntry(updated: StudyEntry) {
+  const entries = loadEntries().map((e) => (e.id === updated.id ? updated : e));
+  saveEntries(entries);
+  return entries;
+}
+
 export function deleteEntry(id: string) {
   const entries = loadEntries().filter((e) => e.id !== id);
   saveEntries(entries);
