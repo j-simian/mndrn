@@ -14,9 +14,11 @@ import { StudyEntry } from "@/lib/types";
 
 export default function Home() {
   const [entries, setEntries] = useState<StudyEntry[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setEntries(loadEntries());
+    setMounted(true);
   }, []);
 
   const dayMap = minutesByDay(entries);
@@ -37,6 +39,16 @@ export default function Home() {
   const totalMinutes = entries.reduce((sum, e) => sum + e.minutes, 0);
   const totalHours = (totalMinutes / 60).toFixed(1);
   const streakDays = calculateStreak(dayMap);
+
+  if (!mounted) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-10">
+        <h1 className="text-2xl font-bold tracking-tight">
+          mndrn <span className="text-zinc-400 font-normal">/ mandarin study tracker</span>
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 flex flex-col gap-8">

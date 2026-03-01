@@ -58,9 +58,7 @@ export default function Heatmap({
                   rx={2}
                   className={cellColor(day.level)}
                 >
-                  <title>
-                    {day.date}: {day.minutes} min
-                  </title>
+                  <title>{`${day.date}: ${day.minutes} min`}</title>
                 </rect>
               ) : null
             )
