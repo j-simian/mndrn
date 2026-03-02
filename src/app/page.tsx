@@ -77,6 +77,28 @@ export default function Home() {
         </div>
       </header>
 
+      <div className="flex flex-col gap-2">
+        <h2 className="text-lg font-semibold">Resources</h2>
+        <div className="flex flex-wrap gap-3">
+          {[
+            { name: "ChinesePod", href: "https://chinesepod.com" },
+            { name: "The Chairman's Bao", href: "https://thechairmansbao.com" },
+            { name: "HSK Online", href: "https://hskonline.com" },
+            { name: "Quizlet", href: "https://quizlet.com" },
+          ].map((r) => (
+            <a
+              key={r.href}
+              href={r.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 hover:border-emerald-500 hover:text-emerald-600 transition-colors dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-emerald-500 dark:hover:text-emerald-400"
+            >
+              {r.name}
+            </a>
+          ))}
+        </div>
+      </div>
+
       <LogForm onAdd={handleAdd} />
 
       <Heatmap minutesByDay={dayMap} />
