@@ -85,6 +85,12 @@ export default function Home() {
           <span>{entries.length} sessions</span>
           <span>{streakDays} day streak</span>
           <Link
+            href="/concepts"
+            className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+          >
+            concepts
+          </Link>
+          <Link
             href="/resources"
             className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
           >

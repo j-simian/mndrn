@@ -48,3 +48,44 @@ export interface StudyEntry {
   note: string;
   subject?: string; // subject node id
 }
+
+export type ConceptStatus = "new" | "learning" | "learnt";
+
+export interface Concept {
+  id: string;
+  text: string;
+  subjects: string[]; // subject node ids
+  status: ConceptStatus;
+  createdAt: string; // ISO date string
+}
+
+/** Merge custom nodes into the base subject tree */
+export function mergeSubjectTree(
+  base: SubjectNode[],
+  custom: SubjectNode[],
+): SubjectNode[] {
+  const merged: SubjectNode[] = base.map((node) => ({
+    ...node,
+    children: node.children ? [...node.children] : [],
+  }));
+  for (const cNode of custom) {
+    // If it's a child node (has a /), attach to existing parent
+    const slashIdx = cNode.id.indexOf("/");
+    if (slashIdx !== -1) {
+      const parentId = cNode.id.slice(0, slashIdx);
+      const parent = merged.find((n) => n.id === parentId);
+      if (parent) {
+        if (!parent.children) parent.children = [];
+        if (!parent.children.some((c) => c.id === cNode.id)) {
+          parent.children.push(cNode);
+        }
+        continue;
+      }
+    }
+    // Top-level custom node
+    if (!merged.some((n) => n.id === cNode.id)) {
+      merged.push(cNode);
+    }
+  }
+  return merged;
+}
