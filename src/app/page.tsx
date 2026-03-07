@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import LogForm from "@/components/LogForm";
 import Heatmap from "@/components/Heatmap";
 import BarChart from "@/components/BarChart";
@@ -79,10 +80,16 @@ export default function Home() {
           mndrn{" "}
           <span className="text-zinc-400 font-normal">/ study tracker</span>
         </h1>
-        <div className="mt-2 flex gap-6 text-sm text-zinc-500 dark:text-zinc-400">
+        <div className="mt-2 flex items-center gap-6 text-sm text-zinc-500 dark:text-zinc-400">
           <span>{totalHours} hrs total</span>
           <span>{entries.length} sessions</span>
           <span>{streakDays} day streak</span>
+          <Link
+            href="/resources"
+            className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+          >
+            resources
+          </Link>
         </div>
       </header>
 
