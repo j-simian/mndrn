@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { StudyEntry } from "@/lib/types";
+import { StudyEntry, SUBJECT_TREE, flattenSubjects } from "@/lib/types";
+
+const SUBJECTS = flattenSubjects(SUBJECT_TREE);
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
@@ -15,6 +17,7 @@ export default function LogForm({
   const [date, setDate] = useState(todayStr);
   const [minutes, setMinutes] = useState("");
   const [note, setNote] = useState("");
+  const [subject, setSubject] = useState(SUBJECTS[0]?.id ?? "");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,6 +29,7 @@ export default function LogForm({
       date,
       minutes: mins,
       note: note.trim(),
+      subject,
     });
     setMinutes("");
     setNote("");
@@ -35,6 +39,17 @@ export default function LogForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <h2 className="text-lg font-semibold">Log Study Time</h2>
       <div className="flex flex-wrap gap-3">
+        <select
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        >
+          {SUBJECTS.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.display}
+            </option>
+          ))}
+        </select>
         <input
           type="date"
           value={date}
