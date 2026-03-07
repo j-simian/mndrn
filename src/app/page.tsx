@@ -11,7 +11,20 @@ import {
   deleteEntry,
   minutesByDay,
 } from "@/lib/storage";
-import { StudyEntry } from "@/lib/types";
+import {
+  StudyEntry,
+  SUBJECT_TREE,
+  flattenSubjects,
+  FlatSubject,
+} from "@/lib/types";
+
+const SUBJECTS = flattenSubjects(SUBJECT_TREE);
+
+function subjectDisplay(subjectId: string | undefined): string | null {
+  if (!subjectId) return null;
+  const found = SUBJECTS.find((s) => s.id === subjectId);
+  return found?.display ?? subjectId;
+}
 
 export default function Home() {
   const [entries, setEntries] = useState<StudyEntry[]>([]);
@@ -53,9 +66,7 @@ export default function Home() {
       <div className="mx-auto max-w-3xl px-4 py-10">
         <h1 className="text-2xl font-bold tracking-tight">
           mndrn{" "}
-          <span className="text-zinc-400 font-normal">
-            / mandarin study tracker
-          </span>
+          <span className="text-zinc-400 font-normal">/ study tracker</span>
         </h1>
       </div>
     );
@@ -66,9 +77,7 @@ export default function Home() {
       <header>
         <h1 className="text-2xl font-bold tracking-tight">
           mndrn{" "}
-          <span className="text-zinc-400 font-normal">
-            / mandarin study tracker
-          </span>
+          <span className="text-zinc-400 font-normal">/ study tracker</span>
         </h1>
         <div className="mt-2 flex gap-6 text-sm text-zinc-500 dark:text-zinc-400">
           <span>{totalHours} hrs total</span>
@@ -76,28 +85,6 @@ export default function Home() {
           <span>{streakDays} day streak</span>
         </div>
       </header>
-
-      <div className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Resources</h2>
-        <div className="flex flex-wrap gap-3">
-          {[
-            { name: "ChinesePod", href: "https://chinesepod.com" },
-            { name: "The Chairman's Bao", href: "https://thechairmansbao.com" },
-            { name: "HSK Online", href: "https://hskonline.com" },
-            { name: "Quizlet", href: "https://quizlet.com" },
-          ].map((r) => (
-            <a
-              key={r.href}
-              href={r.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md border border-zinc-200 px-3 py-2 text-sm font-medium text-zinc-700 hover:border-emerald-500 hover:text-emerald-600 transition-colors dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-emerald-500 dark:hover:text-emerald-400"
-            >
-              {r.name}
-            </a>
-          ))}
-        </div>
-      </div>
 
       <LogForm onAdd={handleAdd} />
 
@@ -115,6 +102,7 @@ export default function Home() {
                 <EditRow
                   key={e.id}
                   entry={e}
+                  subjects={SUBJECTS}
                   onSave={handleUpdate}
                   onCancel={() => setEditingId(null)}
                 />
@@ -127,6 +115,11 @@ export default function Home() {
                     <span className="text-zinc-500 dark:text-zinc-400 w-24">
                       {e.date}
                     </span>
+                    {subjectDisplay(e.subject) && (
+                      <span className="text-emerald-600 dark:text-emerald-400 text-xs font-medium">
+                        {subjectDisplay(e.subject)}
+                      </span>
+                    )}
                     <span className="font-medium">{e.minutes} min</span>
                     {e.note && (
                       <span className="text-zinc-400 dark:text-zinc-500 truncate max-w-[200px]">
@@ -160,27 +153,41 @@ export default function Home() {
 
 function EditRow({
   entry,
+  subjects,
   onSave,
   onCancel,
 }: {
   entry: StudyEntry;
+  subjects: FlatSubject[];
   onSave: (entry: StudyEntry) => void;
   onCancel: () => void;
 }) {
   const [date, setDate] = useState(entry.date);
   const [minutes, setMinutes] = useState(String(entry.minutes));
   const [note, setNote] = useState(entry.note);
+  const [subject, setSubject] = useState(entry.subject ?? subjects[0]?.id ?? "");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const mins = parseInt(minutes, 10);
     if (!mins || mins <= 0) return;
-    onSave({ ...entry, date, minutes: mins, note: note.trim() });
+    onSave({ ...entry, date, minutes: mins, note: note.trim(), subject });
   }
 
   return (
     <li className="py-2">
       <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2 text-sm">
+        <select
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="rounded border border-zinc-300 bg-white px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+        >
+          {subjects.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.display}
+            </option>
+          ))}
+        </select>
         <input
           type="date"
           value={date}
